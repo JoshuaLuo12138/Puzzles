@@ -1,0 +1,99 @@
+import math
+
+def draw_row(data_list):
+    formatted_list = []
+    for s in data_list:
+        if len(s) == 0:
+            formatted_list.append('    ')
+        elif len(s) == 1:
+            formatted_list.append('  ' + s + ' ')
+        elif len(s) == 2:
+            formatted_list.append(' ' + s + ' ')
+    print('│' + '│'.join(formatted_list) + '│', end="")
+    return
+
+
+def draw_grid(n, data_list):
+    print("┌", end="")
+    for i in range(n - 1):
+        print("────┬", end="")
+    print("────┐")
+    for i in range(n):
+        rows = []
+        for j in range(n):
+            index = i * n + j
+            number = data_list[index]
+            rows.append(number)
+        draw_row(rows)
+
+        if i < n - 1:
+            print("\n├", end="")
+            for j in range(n - 1):
+                print("────┼", end="")
+            print("────┤")
+        else:
+            print()
+    print("└", end="")
+    for i in range(n - 1):
+        print("────┴", end="")
+    print("────┘")
+    return
+
+
+def milestone_1(tiles):
+    numbers = tiles.split(",")
+    n = int(math.sqrt(len(numbers)))
+    
+    draw_grid(n, numbers)
+
+def is_vertically_adjacent(n, first, second,data_list):
+    f_index = data_list.index(first)
+    s_index = data_list.index(second)
+    gap = abs(f_index-s_index)
+
+    if gap == n:
+        return True
+    else:
+        return False
+    
+def is_horizontally_adjacent(n, first, second,data_list):
+    f_index = data_list.index(first)
+    s_index = data_list.index(second)
+    gap = abs(f_index-s_index)
+    f_row = int(f_index/n)
+    s_row = int(s_index/n)
+    if gap == 1 and f_row == s_row:
+        return True
+    else:
+        return False
+
+def main(tiles):
+    numbers = tiles.split(",")
+    n = int(math.sqrt(len(numbers))) 
+    draw_grid(n, numbers)
+    count = 0
+    
+    while not is_complete(numbers) :
+        user_input = input("Your move: ")
+        if user_input not in numbers:
+            print(user_input + " is not valid. Try again.")
+        elif user_input == "quit" or is_vertically_adjacent(n,"",user_input,numbers) or is_horizontally_adjacent(n, "", user_input,numbers):
+            count = count + 1
+            numbers = swap_tile(numbers,user_input)
+            draw_grid(n, numbers)
+        else:
+            print(user_input + " is not valid. Try again.")
+    print("You won in " + str(count) + " moves. Congratulations!")
+
+def swap_tile(list_of_tiles, tile_choice):
+    f_index = list_of_tiles.index("")
+    s_index = list_of_tiles.index(tile_choice)
+
+    list_of_tiles[f_index], list_of_tiles[s_index] = list_of_tiles[s_index], list_of_tiles[f_index]
+    return list_of_tiles
+
+def is_complete(list_of_tiles):
+    int_tiles = [int(t) for t in list_of_tiles if t != '']
+    return int_tiles == sorted(int_tiles) and list_of_tiles[-1] == ''
+    
+main("1,2,3,4,5,6,7,8,9,10,12,,13,14,11,15")
